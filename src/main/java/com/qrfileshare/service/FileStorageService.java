@@ -86,6 +86,9 @@ public class FileStorageService {
         }
 
         String signedPath = (String) response.getBody().get("signedURL");
+        if (!signedPath.startsWith("/storage")) {
+            signedPath = "/storage/v1" + signedPath;
+        }
         return supabaseUrl + signedPath;
     }
 

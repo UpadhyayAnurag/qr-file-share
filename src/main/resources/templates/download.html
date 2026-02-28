@@ -4,51 +4,61 @@
     <meta charset="UTF-8">
     <title>Enter Password - QR File Share</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center;
-            align-items: center; height: 100vh; margin: 0; background: #1a1a2e; color: #eee; }
-        .card { background: #16213e; padding: 40px; border-radius: 12px;
-            width: 360px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-        h2 { margin-bottom: 8px; color: #e94560; }
-        p.filename { color: #a0a0b0; font-size: 14px; margin-bottom: 24px; }
-        input[type=password] { width: 100%; padding: 12px; border-radius: 8px;
-            border: 1px solid #333; background: #0f3460; color: #fff;
-            font-size: 16px; box-sizing: border-box; margin-bottom: 16px; }
-        button { width: 100%; padding: 12px; background: #e94560; color: white;
-            border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #c73652; }
-        #error { color: #ff6b6b; margin-top: 12px; display: none; }
+        body { font-family:Arial,sans-serif; display:flex; justify-content:center;
+            align-items:center; height:100vh; margin:0; background:#1a1a2e; color:#eee; }
+        .card { background:#16213e; padding:40px; border-radius:12px; width:360px;
+            text-align:center; box-shadow:0 8px 32px rgba(0,0,0,.4); }
+        h2 { margin-bottom:8px; color:#e94560; }
+        p.filename { color:#a0a0b0; font-size:14px; margin-bottom:24px; }
+        input[type=password] { width:100%; padding:12px; border-radius:8px;
+            border:1px solid #333; background:#0f3460; color:#fff;
+            font-size:16px; box-sizing:border-box; margin-bottom:16px; }
+        button { width:100%; padding:12px; background:#e94560; color:white;
+            border:none; border-radius:8px; font-size:16px; cursor:pointer; }
+        button:hover { background:#c73652; }
+        #error { color:#ff6b6b; margin-top:12px; display:none; font-size:13px; }
     </style>
 </head>
 <body>
 <div class="card">
-    <h2>Password Required</h2>
+    <h2> Password Required</h2>
     <p class="filename" th:text="${fileName}">filename.pdf</p>
     <input type="password" id="password" placeholder="Enter password" />
     <button onclick="verify()">Download File</button>
     <p id="error">Incorrect password. Please try again.</p>
 </div>
-
 <script th:inline="javascript">
     const fileId = /*[[${fileId}]]*/ '';
 
     async function verify() {
         const password = document.getElementById('password').value;
         if (!password) return;
-
         const res = await fetch('/api/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fileId, password })
         });
-
         const data = await res.json();
-
-        if (res.ok && data.signedUrl) {
-            window.location.href = data.signedUrl;
+        if (res.ok && data.streamToken) {
+            // Trigger the download
+            window.location.href = `/download/${fileId}/stream?token=${data.streamToken}`;
+            // Update UI to show success (browser stays on this page during download)
+            setTimeout(() => {
+                document.querySelector('.card').innerHTML = `
+                <span style="font-size:56px; display:block; margin-bottom:16px;">✅</span>
+                <h2 style="color:#6bffb8; margin-bottom:8px;">Download Started!</h2>
+                <p style="color:#a0a0b0; font-size:14px;">Your file is downloading in the background.</p>
+            `;
+            }, 800);
         } else {
+            document.getElementById('error').textContent = data.error || 'Incorrect password';
             document.getElementById('error').style.display = 'block';
         }
     }
+
+    document.getElementById('password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') verify();
+    });
 </script>
 </body>
 </html>

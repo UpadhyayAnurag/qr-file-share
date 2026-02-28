@@ -2,9 +2,14 @@ package com.qrfileshare.service;
 
 import com.qrfileshare.model.FileShare;
 import com.qrfileshare.repository.FileShareRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,16 +23,19 @@ public class FileShareService {
     private final FileShareRepository repository;
     private final FileStorageService storageService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
 
     @Value("${app.default-expiry-hours}")
     private int defaultExpiryHours;
 
     public FileShareService(FileShareRepository repository,
                             FileStorageService storageService,
-                            BCryptPasswordEncoder passwordEncoder) {
+                            BCryptPasswordEncoder passwordEncoder,
+                            RestTemplate restTemplate) {
         this.repository = repository;
         this.storageService = storageService;
         this.passwordEncoder = passwordEncoder;
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -59,6 +67,28 @@ public class FileShareService {
         }
 
         return repository.save(fileShare);
+    }
+
+    /**
+     * Fetch file from Supabase Storage server-side and stream to browser.
+     * Browser never sees the Supabase URL.
+     */
+    public void streamFile(FileShare fileShare, HttpServletResponse response) throws IOException {
+        String signedUrl = generateSignedUrl(fileShare);
+        ResponseEntity<byte[]> supabaseResponse = restTemplate.exchange(
+                signedUrl,
+                HttpMethod.GET,
+                new HttpEntity<>(new org.springframework.http.HttpHeaders()),
+                byte[].class
+        );
+        byte[] fileBytes = supabaseResponse.getBody();
+        if (fileBytes == null) throw new IOException("Failed to fetch file from storage");
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition",
+                "attachment; filename=\"" + fileShare.getFileName() + "\"");
+        response.setContentLength(fileBytes.length);
+        response.getOutputStream().write(fileBytes);
+        response.getOutputStream().flush();
     }
 
     public Optional<FileShare> findById(UUID fileId) {

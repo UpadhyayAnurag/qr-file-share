@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Downloading - QR File Share</title>
+  <style>
+    body { font-family: Arial, sans-serif; display:flex; justify-content:center;
+      align-items:center; height:100vh; margin:0; background:#1a1a2e; color:#eee; }
+    .card { background:#16213e; padding:40px; border-radius:12px; width:360px;
+      text-align:center; box-shadow:0 8px 32px rgba(0,0,0,.4); }
+    h2 { color:#7c6cf8; margin-bottom:8px; }
+    p.filename { color:#a0a0b0; font-size:14px; margin-bottom:20px; }
+    .spinner { width:36px; height:36px; border:3px solid #3a3a5a;
+      border-top-color:#7c6cf8; border-radius:50%;
+      animation:spin .8s linear infinite; margin:0 auto 12px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    a.manual { color:#7c6cf8; font-size:13px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="spinner"></div>
+  <h2>Preparing Download</h2>
+  <p class="filename" th:text="${fileName}">file.pdf</p>
+  <p style="color:#a0a0b0; font-size:13px;">Your download will start automatically.</p>
+  <br>
+  <a class="manual" th:href="@{/download/{id}/stream(id=${fileId})}">
+    Click here if it doesn't start
+  </a>
+</div>
+<script th:inline="javascript">
+  const fileId = /*[[${fileId}]]*/ '';
+  const h2 = document.querySelector('h2');
+  const p  = document.querySelector('p');
+  const spinner = document.querySelector('.spinner');
+  const manual  = document.querySelector('a.manual');
+  setTimeout(() => {
+    // Trigger the file download
+    window.location.href = `/download/${fileId}/stream`;
+    // After a short delay, switch to success state
+    setTimeout(() => {
+      spinner.style.display = 'none';
+      manual.style.display  = 'none';
+      h2.textContent = '✅ Download Started!';
+      h2.style.color = '#6bffb8';
+      p.textContent  = 'Your file is downloading in the background.';
+    }, 800);
+  }, 500);
+</script>
+</body>
+</html>

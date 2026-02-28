@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "QR File Share",
+  "version": "1.0",
+  "description": "Securely share files via QR code with expiry and password protection",
+  "permissions": ["sidePanel"],
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "host_permissions": [
+    "http://localhost:8080/*"
+  ]
+}

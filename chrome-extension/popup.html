@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>QR File Share</title>
+    <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Top Bar with Close Button -->
+    <div class="top-bar">
+        <button id="closeBtn" class="close-btn" title="Close panel">✕</button>
+        <h1>🔐 QR File Share</h1>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="section" id="upload-section">
+
+        <label class="file-label" id="fileLabel">
+            <span id="file-name-display">Click to select a file</span>
+            <input type="file" id="fileInput" hidden />
+        </label>
+
+        <select id="expirySelect">
+            <option value="1">Expires in 1 hour</option>
+            <option value="6">Expires in 6 hours</option>
+            <option value="24" selected>Expires in 24 hours</option>
+            <option value="168">Expires in 7 days</option>
+        </select>
+
+        <div class="password-row">
+            <label>
+                <input type="checkbox" id="passwordToggle" />
+                Password protect
+            </label>
+        </div>
+        <input type="password" id="passwordInput" placeholder="Enter password" class="hidden" />
+
+        <button id="uploadBtn" disabled>Select a file first</button>
+        <p id="errorMsg" class="error hidden"></p>
+    </div>
+
+    <!-- Loading Section -->
+    <div id="loading-section" class="section hidden">
+        <div class="spinner"></div>
+        <p style="text-align:center; color:#9090b0; font-size:13px;">Uploading...</p>
+    </div>
+
+    <!-- Result Section -->
+    <div id="result-section" class="section hidden">
+        <p class="success">✅ File uploaded successfully!</p>
+        <div id="qrcode"></div>
+        <p id="expiry-label" class="muted"></p>
+        <input type="text" id="linkInput" readonly />
+        <button id="copyBtn">Copy Link</button>
+        <button id="resetBtn" class="secondary">Upload Another File</button>
+    </div>
+
+</div>
+
+<script src="qrcode.min.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

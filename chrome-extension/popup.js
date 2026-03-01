@@ -1,4 +1,4 @@
-const API_BASE = "https://qr-file-share.onrender.com";
+const API_BASE = "https://qr-file-share-nakh.onrender.com";
 
 // Element References
 const fileInput = document.getElementById("fileInput");

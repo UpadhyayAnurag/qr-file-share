@@ -31,7 +31,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // Allow Chrome Extension and local dev
-        config.setAllowedOriginPatterns(List.of("chrome-extension://*", "http://localhost:*", "https://*.onrender.com"));
+        config.setAllowedOriginPatterns(List.of("chrome-extension://*", "http://localhost:*", "https://qr-file-share-nakh.onrender.com/*"));
         config.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

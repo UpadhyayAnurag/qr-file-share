@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR File Share - Secure File Sharing via QR Code</title>
+  <meta name="description" content="Share files instantly via QR code with password protection and auto-expiry. Free, secure, zero-hassle." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a14;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(124,108,248,0.18) 0%, transparent 70%);
+    }
+
+    /* Why Tooltip */
+    .why-tooltip {
+      position: relative;
+      display: inline-block;
+      margin-left: 6px;
+      font-size: 13px;
+      color: #7c6cf8;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tooltip-box {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a2e;
+      border: 1px solid rgba(124,108,248,0.35);
+      border-radius: 10px;
+      padding: 14px 16px;
+      width: 260px;
+      font-size: 13px;
+      color: #c0b8ff;
+      line-height: 1.6;
+      white-space: normal;
+      text-align: left;
+      z-index: 10;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    /* Arrow */
+    .tooltip-box::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 7px solid transparent;
+      border-top-color: rgba(124,108,248,0.35);
+    }
+    .why-tooltip:hover .tooltip-box {
+      display: block;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(124,108,248,0.15);
+      border: 1px solid rgba(124,108,248,0.35);
+      border-radius: 999px;
+      font-size: 12px;
+      color: #a898ff;
+      letter-spacing: 0.5px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 56px);
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    h1 span { color: #7c6cf8; }
+
+    .subtitle {
+      font-size: 18px;
+      color: #9090b0;
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .cta-group {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: #7c6cf8;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: #6a5ae0; transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: #c0b8ff;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 10px;
+      border: 1px solid rgba(124,108,248,0.4);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: #7c6cf8; color: #ffffff; }
+
+    /* ── Features ── */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 0 24px 64px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      flex: 1;
+      min-width: 220px;
+      max-width: 260px;
+      background: #12122a;
+      border: 1px solid #1e1e3a;
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .feature-icon { font-size: 32px; margin-bottom: 14px; }
+    .feature-card h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .feature-card p { font-size: 13px; color: #7a7a9a; line-height: 1.6; }
+
+    /*  Install Steps  */
+    .install-section {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      text-align: center;
+      font-size: 14px;
+      color: #7a7a9a;
+      margin-bottom: 36px;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      background: #12122a;
+      border: 1px solid #1e1e3a;
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+
+    .step-num {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      background: rgba(124,108,248,0.2);
+      border: 1px solid rgba(124,108,248,0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #a898ff;
+    }
+
+    .step-body h4 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .step-body p  { font-size: 13px; color: #7a7a9a; line-height: 1.6; }
+    .step-body code {
+      background: rgba(124,108,248,0.12);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #c0b8ff;
+    }
+
+    /* Download Banner */
+    .download-banner {
+      margin: 0 auto 80px;
+      max-width: 600px;
+      padding: 0 24px;
+    }
+
+    .banner-box {
+      background: linear-gradient(135deg, rgba(124,108,248,0.15), rgba(100,80,220,0.08));
+      border: 1px solid rgba(124,108,248,0.3);
+      border-radius: 16px;
+      padding: 36px;
+      text-align: center;
+    }
+
+    .banner-box h3 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .banner-box p  { font-size: 14px; color: #9090b0; margin-bottom: 24px; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: #4a4a6a;
+      border-top: 1px solid #1a1a2e;
+    }
+    footer a { color: #7c6cf8; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="badge">🔐 Zero Cost · Secure · Open Source</div>
+  <h1>Share Files via<br/><span>QR Code</span> - Instantly</h1>
+  <p class="subtitle">
+    Share files instantly via QR code with optional password protection
+    and auto-expiry. No sign-up required.
+    <span class="why-tooltip">
+    ℹ Why this?
+    <span class="tooltip-box">
+      Sharing a file from your desktop to your phone was always a
+      hassle - cables, WhatsApp to yourself, email. QR File Share
+      removes that friction entirely. Upload once, scan, done.
+    </span>
+  </span>
+  </p>
+
+  <div class="cta-group">
+    <a href="/qr-file-share-extension.zip" class="btn-primary" download>
+      ⬇ Download Extension
+    </a>
+    <a href="https://github.com/upadhyayanurag/qr-file-share" target="_blank" class="btn-secondary">
+      ★ View on GitHub
+    </a>
+  </div>
+</section>
+
+<!-- Features -->
+<div class="features">
+  <div class="feature-card">
+    <div class="feature-icon">📁</div>
+    <h3>Any File, Up to 50MB</h3>
+    <p>PDFs, images, documents - share anything in seconds directly from Chrome.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔒</div>
+    <h3>Password Protection</h3>
+    <p>Optionally protect your file with a password. BCrypt-hashed, never stored in plain text.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">⏱</div>
+    <h3>Auto-Expiry</h3>
+    <p>Files automatically delete after 1 hour, 6 hours, 24 hours, or 7 days - your choice.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🛡</div>
+    <h3>Private Storage</h3>
+    <p>Files are stored in a private bucket. No public URL ever exists for your data.</p>
+  </div>
+</div>
+
+<!-- Install Steps -->
+<section class="install-section">
+  <h2 class="section-title">Install in 3 Steps</h2>
+  <p class="section-sub">No Chrome Web Store needed - load directly in Developer Mode</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Download & Extract</h4>
+        <p>
+          Click <strong>"Download Extension"</strong> above and extract the ZIP to a folder
+          of your choice (e.g. <code>C:\qr-file-share-extension\</code>).
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Open Chrome Extensions</h4>
+        <p>
+          In Chrome, go to <code>chrome://extensions</code> and toggle
+          <strong>Developer mode</strong> on (top-right switch).
+          Then click <strong>"Load unpacked"</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Select the Folder & Pin</h4>
+        <p>
+          Navigate to and select the extracted folder. The
+          <strong>QR File Share</strong> extension appears in your extensions list.
+          Click the Extension icon in Chrome → pin it to your toolbar. Done!
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Download Banner -->
+<div class="download-banner">
+  <div class="banner-box">
+    <h3>Ready to try it?</h3>
+    <p>Free forever · No account · Works on Chrome 114+</p>
+    <a href="/qr-file-share-extension.zip" class="btn-primary" download>
+      ⬇ Download Extension (.zip)
+    </a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  Built with Spring Boot · Supabase · Chrome Extensions API &nbsp;|&nbsp;
+  <a href="https://github.com/upadhyayanurag/" target="_blank">GitHub</a>
+  &nbsp;·&nbsp;
+  <a href="https://linkedin.com/in/upadhyayanurag49" target="_blank">LinkedIn</a>
+</footer>
+
+</body>
+</html>

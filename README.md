@@ -29,7 +29,7 @@ QR File Share is a web application designed for secure, temporary file sharing. 
 - **CORS Configuration**: Secure cross-origin requests with origin pattern validation
 
 ### 📤 File Management
-- **Multi-Format Support**: Upload any file type up to configured limits
+- **Multi-Format Support**: Upload any file type up to configured limits (50MB)
 - **Unique Identifiers**: UUID-based file tracking
 - **Download Tracking**: Monitor download count for each file
 - **Batch Cleanup**: Scheduled removal of expired files every 60 seconds
@@ -272,12 +272,6 @@ Status Codes:
 - **Connection Pooling**: HTTP client with pooling for Supabase requests
 - **Scheduled Cleanup**: Offloads expiry management from request processing
 - **Token Store**: In-memory store for fast validation (O(1) lookup)
-
----
-
-## License
-
-This project is open source. See [LICENSE](LICENSE) file for details.
 
 ---
 

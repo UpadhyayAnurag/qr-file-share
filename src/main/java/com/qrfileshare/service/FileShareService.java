@@ -47,9 +47,8 @@ public class FileShareService {
     public FileShare uploadFile(MultipartFile file, String password, int expiryHours) throws IOException {
         UUID fileId = UUID.randomUUID();
 
-        // Create storage path: files/<uuid>_<original-filename>
-        String safeFileName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9._-]", "_");
-        String storagePath = "files/" + fileId + "_" + safeFileName;
+        // Create storage path: files/<uuid>
+        String storagePath = "files/" + fileId;
 
         // Upload to Supabase Storage
         storageService.uploadFile(storagePath, file);

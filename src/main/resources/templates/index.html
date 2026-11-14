@@ -6,367 +6,290 @@
   <title>QR File Share - Secure File Sharing via QR Code</title>
   <meta name="description" content="Share files instantly via QR code with password protection and auto-expiry. Free, secure, zero-hassle." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500..700&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #0a0a14;
-      color: #e0e0e0;
-      min-height: 100vh;
+    :root {
+      color-scheme: light dark;
+      --navy: #1b2a3d; --navy-edge: #243649; --footer-bg: #1b2a3d;
+      --accent: #e8a98f; --accent-hover: #efb9a1; --on-accent: #1b2a3d;
+      --bg-a: #f7f5ef; --bg-b: #efeeea; --bg-c: #f5f3ee;
+      --card: #fdfdf9; --card-border: #e9e7e0; --ink: #1b2a3d; --text: #46586d; --muted: #5d6f82;
+      --tile: #e8eef0; --tile-ink: #4d6475; --num: #364b60; --num-ink: #ffffff; --line: #d6dbdf;
+      --banner: #e9edf1; --banner-border: #dde3e8; --banner-btn: #1b2a3d; --banner-btn-ink: #ffffff; --banner-btn-hover: #2a3d55;
+      --shadow: 0 1px 2px rgba(20,32,52,0.06), 0 10px 26px -14px rgba(20,32,52,0.18);
+      --font-head: 'Fraunces', Georgia, serif; --font-body: 'DM Sans', system-ui, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1); --r-card: 14px; --r-btn: 10px;
     }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --navy: #0f1826; --navy-edge: #1a2639; --footer-bg: #0b121d;
+        --bg-a: #121b2a; --bg-b: #0f1724; --bg-c: #121b2a;
+        --card: #1a2436; --card-border: #29364c; --ink: #f2efe8; --text: #b9c4d2; --muted: #93a2b5;
+        --tile: #263349; --tile-ink: #a9bccd; --num: #3b5170; --num-ink: #f2efe8; --line: #2d3b52;
+        --banner: #18233a; --banner-border: #2a3750; --banner-btn: #e8a98f; --banner-btn-ink: #1b2a3d; --banner-btn-hover: #efb9a1;
+        --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 28px -16px rgba(0,0,0,0.6);
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: var(--bg-a); color: var(--text); min-height: 100vh; overflow-x: clip; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3, h4 { font-family: var(--font-head); color: var(--ink); line-height: 1.15; }
+    a { color: inherit; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
     /* ── Hero ── */
-    .hero {
-      text-align: center;
-      padding: 80px 24px 60px;
-      background: radial-gradient(ellipse at 50% 0%, rgba(124,108,248,0.18) 0%, transparent 70%);
-    }
+    .hero { position: relative; overflow: hidden; background: var(--navy); color: #f2efe8; text-align: center; padding: 104px 24px 96px; }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+    .hero::before { width: 560px; height: 560px; top: -300px; right: -140px; background: rgba(255,255,255,0.035); animation: breathe 9s ease-in-out infinite alternate; }
+    .hero::after { width: 380px; height: 380px; top: -230px; right: -50px; background: rgba(255,255,255,0.04); animation: breathe 11s ease-in-out infinite alternate-reverse; }
+    .hero > * { position: relative; z-index: 1; }
+
+    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); border-radius: 999px; font-size: 12px; font-weight: 700; color: #f2efe8; margin-bottom: 28px; }
+    .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    .hero h1 { color: #f6f2ea; font-size: clamp(26px, 1.2vw + 16px, 34px); font-weight: 700; letter-spacing: -0.01em; max-width: 780px; margin: 0 auto 20px; }
+    .subtitle { font-size: 16px; line-height: 1.65; color: #d8dee6; max-width: 600px; margin: 0 auto 14px; }
 
     /* Why Tooltip */
-    .why-tooltip {
-      position: relative;
-      display: inline-block;
-      margin-left: 6px;
-      font-size: 13px;
-      color: #7c6cf8;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .tooltip-box {
-      display: none;
-      position: absolute;
-      bottom: calc(100% + 10px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a1a2e;
-      border: 1px solid rgba(124,108,248,0.35);
-      border-radius: 10px;
-      padding: 14px 16px;
-      width: 260px;
-      font-size: 13px;
-      color: #c0b8ff;
-      line-height: 1.6;
-      white-space: normal;
-      text-align: left;
-      z-index: 10;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
-    /* Arrow */
-    .tooltip-box::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 7px solid transparent;
-      border-top-color: rgba(124,108,248,0.35);
-    }
-    .why-tooltip:hover .tooltip-box {
-      display: block;
-    }
+    .why-tooltip { position: relative; display: inline-block; font-size: 13px; font-weight: 500; color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; cursor: pointer; margin-bottom: 34px; }
+    .tooltip-box { visibility: hidden; opacity: 0; position: absolute; z-index: 20; bottom: calc(100% + 12px); left: 50%; width: min(290px, calc(100vw - 48px)); translate: -50% 8px; padding: 14px 16px; background: var(--navy-edge); border: 1px solid rgba(232,169,143,0.4); border-radius: 12px; box-shadow: 0 14px 30px -12px rgba(0,0,0,0.6); font-size: 13px; font-weight: 400; line-height: 1.65; color: #e7e2d8; text-align: left; pointer-events: none; transition: opacity 0.2s, translate 0.25s var(--ease), visibility 0.2s; }
+    .tooltip-box::after { content: ""; position: absolute; top: 100%; left: 50%; translate: -50% 0; border: 7px solid transparent; border-top-color: rgba(232,169,143,0.4); }
+    .why-tooltip:hover .tooltip-box, .why-tooltip:focus .tooltip-box { visibility: visible; opacity: 1; translate: -50% 0; }
+    .why-wrap { display: block; }
 
-    .badge {
-      display: inline-block;
-      padding: 6px 16px;
-      background: rgba(124,108,248,0.15);
-      border: 1px solid rgba(124,108,248,0.35);
-      border-radius: 999px;
-      font-size: 12px;
-      color: #a898ff;
-      letter-spacing: 0.5px;
-      margin-bottom: 24px;
-    }
+    .cta-group { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .btn-primary, .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 22px; font-size: 14px; font-weight: 700; border-radius: var(--r-btn); text-decoration: none; transition: background-color 0.2s, border-color 0.2s, transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
+    .btn-primary { background: var(--accent); color: var(--on-accent); border: 1px solid var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 12px 24px -12px rgba(232,169,143,0.7); }
+    .btn-secondary { background: transparent; color: #f6f2ea; border: 1px solid rgba(255,255,255,0.28); }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.06); transform: translateY(-2px); }
+    .btn-primary:active, .btn-secondary:active { transform: translateY(0); }
+    .icon { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    h1 {
-      font-size: clamp(32px, 6vw, 56px);
-      font-weight: 700;
-      color: #ffffff;
-      line-height: 1.15;
-      margin-bottom: 20px;
-    }
-
-    h1 span { color: #7c6cf8; }
-
-    .subtitle {
-      font-size: 18px;
-      color: #9090b0;
-      max-width: 520px;
-      margin: 0 auto 40px;
-      line-height: 1.6;
-    }
-
-    .cta-group {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
-      background: #7c6cf8;
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 10px;
-      text-decoration: none;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn-primary:hover { background: #6a5ae0; transform: translateY(-1px); }
-
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
-      background: transparent;
-      color: #c0b8ff;
-      font-size: 15px;
-      font-weight: 500;
-      border-radius: 10px;
-      border: 1px solid rgba(124,108,248,0.4);
-      text-decoration: none;
-      transition: border-color 0.2s, color 0.2s;
-    }
-    .btn-secondary:hover { border-color: #7c6cf8; color: #ffffff; }
+    /* QR scan card (hero) */
+    .scan { width: 184px; margin: 44px auto 0; }
+    .scan-tile { position: relative; overflow: hidden; border-radius: 16px; background: #faf8f2; box-shadow: 0 16px 34px -16px rgba(0,0,0,0.6), 0 0 0 6px rgba(255,255,255,0.06); }
+    .qr { display: block; width: 100%; height: auto; padding: 10px; color: #0f1826; }
+    .beam { position: absolute; inset: 0; background: rgba(232,169,143,0.22); border-bottom: 2px solid var(--accent); transform: translateY(-100%); pointer-events: none; animation: sweep 1.6s var(--ease) 1.2s 1 both; }
+    .scan:hover .beam, .scan:focus-within .beam { animation-name: sweep-again; animation-delay: 0s; }
+    .scan figcaption { margin-top: 16px; font-size: 12.5px; line-height: 1.5; color: #c9d1dc; }
 
     /* ── Features ── */
-    .features {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      padding: 0 24px 64px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .features-band { background: var(--bg-a); padding: 84px 24px 88px; }
+    .features { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; max-width: 1120px; margin: 0 auto; }
+    .feature-card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--r-card); padding: 22px 20px 24px; box-shadow: var(--shadow); transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease); }
+    .feature-card:hover { transform: translateY(-6px); box-shadow: 0 1px 2px rgba(20,32,52,0.06), 0 22px 36px -16px rgba(20,32,52,0.28); }
+    .feature-icon { display: grid; place-items: center; width: 36px; height: 36px; margin-bottom: 18px; border-radius: 9px; background: var(--tile); color: var(--tile-ink); }
+    .feature-icon .icon { width: 18px; height: 18px; stroke-width: 1.75; }
+    .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { font-size: 13px; line-height: 1.65; color: var(--text); }
 
-    .feature-card {
-      flex: 1;
-      min-width: 220px;
-      max-width: 260px;
-      background: #12122a;
-      border: 1px solid #1e1e3a;
-      border-radius: 14px;
-      padding: 24px;
-      text-align: center;
-    }
+    /* ── Install Steps ── */
+    .install-band { background: var(--bg-b); padding: 84px 24px 96px; }
+    .install-section { max-width: 780px; margin: 0 auto; }
+    .section-title { text-align: center; font-size: clamp(22px, 1vw + 16px, 30px); font-weight: 700; margin-bottom: 10px; }
+    .section-sub { text-align: center; font-size: 14px; color: var(--muted); margin-bottom: 40px; }
+    .steps { position: relative; display: flex; flex-direction: column; gap: 14px; }
+    .steps::before { content: ""; position: absolute; left: 41px; top: 44px; bottom: 44px; width: 2px; background: var(--line); transform-origin: top; }
+    .step { position: relative; display: flex; gap: 16px; align-items: flex-start; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--r-card); padding: 24px 26px; box-shadow: var(--shadow); transition: transform 0.35s var(--ease); }
+    .step:hover { transform: translateX(6px); }
+    .step-num { position: relative; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--num); color: var(--num-ink); font-size: 13px; font-weight: 700; }
+    .step-body h4 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .step-body p { font-size: 13px; line-height: 1.65; color: var(--text); }
+    .step-body code { font: inherit; }
 
-    .feature-icon { font-size: 32px; margin-bottom: 14px; }
-    .feature-card h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; }
-    .feature-card p { font-size: 13px; color: #7a7a9a; line-height: 1.6; }
-
-    /*  Install Steps  */
-    .install-section {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: 26px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .section-sub {
-      text-align: center;
-      font-size: 14px;
-      color: #7a7a9a;
-      margin-bottom: 36px;
-    }
-
-    .steps {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .step {
-      display: flex;
-      gap: 18px;
-      align-items: flex-start;
-      background: #12122a;
-      border: 1px solid #1e1e3a;
-      border-radius: 12px;
-      padding: 20px 24px;
-    }
-
-    .step-num {
-      width: 34px;
-      height: 34px;
-      flex-shrink: 0;
-      background: rgba(124,108,248,0.2);
-      border: 1px solid rgba(124,108,248,0.4);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 14px;
-      color: #a898ff;
-    }
-
-    .step-body h4 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
-    .step-body p  { font-size: 13px; color: #7a7a9a; line-height: 1.6; }
-    .step-body code {
-      background: rgba(124,108,248,0.12);
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-size: 12px;
-      color: #c0b8ff;
-    }
-
-    /* Download Banner */
-    .download-banner {
-      margin: 0 auto 80px;
-      max-width: 600px;
-      padding: 0 24px;
-    }
-
-    .banner-box {
-      background: linear-gradient(135deg, rgba(124,108,248,0.15), rgba(100,80,220,0.08));
-      border: 1px solid rgba(124,108,248,0.3);
-      border-radius: 16px;
-      padding: 36px;
-      text-align: center;
-    }
-
-    .banner-box h3 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-    .banner-box p  { font-size: 14px; color: #9090b0; margin-bottom: 24px; }
+    /* ── Download Banner ── */
+    .banner-band { background: var(--bg-c); padding: 84px 24px 96px; }
+    .banner-box { position: relative; overflow: hidden; max-width: 780px; margin: 0 auto; padding: 48px 32px 52px; text-align: center; background: var(--banner); border: 1px solid var(--banner-border); border-radius: 18px; box-shadow: var(--shadow); }
+    .banner-box::before { content: ""; position: absolute; width: 200px; height: 200px; top: -110px; right: -60px; border: 1px solid var(--banner-border); border-radius: 50%; }
+    .banner-box > * { position: relative; }
+    .banner-box h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .banner-box p { font-size: 13px; color: var(--text); margin-bottom: 22px; }
+    .btn-dark { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; font-size: 14px; font-weight: 700; border-radius: var(--r-btn); text-decoration: none; background: var(--banner-btn); color: var(--banner-btn-ink); box-shadow: 0 10px 22px -12px rgba(20,32,52,0.6); transition: background-color 0.2s, transform 0.25s var(--ease), box-shadow 0.25s var(--ease); }
+    .btn-dark:hover { background: var(--banner-btn-hover); transform: translateY(-2px); }
 
     /* Footer */
-    footer {
-      text-align: center;
-      padding: 24px;
-      font-size: 13px;
-      color: #4a4a6a;
-      border-top: 1px solid #1a1a2e;
+    footer { display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; flex-wrap: wrap; background: var(--footer-bg); color: #e7e2d8; font-size: 11.5px; padding: 22px 48px; }
+    footer .links { display: flex; gap: 24px; }
+    footer a { color: #f6f2ea; font-weight: 700; text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* Motion */
+    @keyframes rise { from { opacity: 0; translate: 0 22px; } to { opacity: 1; translate: 0 0; } }
+    @keyframes sweep { 0% { transform: translateY(-100%); opacity: 1; } 85% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0); opacity: 0; } }
+    @keyframes sweep-again { 0% { transform: translateY(-100%); opacity: 1; } 85% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0); opacity: 0; } }
+    @keyframes breathe { from { scale: 1; } to { scale: 1.06; } }
+    .rise { animation: rise 0.8s var(--ease) both; animation-delay: calc(var(--i, 0) * 90ms); }
+    .js .reveal { opacity: 0; translate: 0 26px; transition: opacity 0.8s var(--ease), translate 0.8s var(--ease); transition-delay: calc(var(--i, 0) * 100ms); }
+    .js .reveal.in { opacity: 1; translate: 0 0; }
+    .js .steps::before { scale: 1 0; transition: scale 1.3s var(--ease) 0.3s; }
+    .js .steps.in::before { scale: 1 1; }
+
+    @media (max-width: 47.9rem) { .features { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 40rem) {
+      .hero { padding: 64px 20px 76px; }
+      .features-band, .install-band, .banner-band { padding-inline: 16px; }
+      .features { grid-template-columns: minmax(0, 1fr); }
+      .hero h1 { font-size: 28px; }
+      .cta-group { flex-direction: column; align-items: stretch; }
+      .scan { margin-top: 36px; }
+      .banner-box { padding: 36px 20px; }
+      footer { padding: 22px 20px; flex-direction: column; align-items: flex-start; }
+      .step { padding: 18px 16px; }
+      .steps::before { left: 35px; }
     }
-    footer a { color: #7c6cf8; text-decoration: none; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+      .js .reveal { opacity: 1; translate: none; }
+      .beam { display: none; }
+      .js .steps::before { scale: 1 1; }
+    }
   </style>
 </head>
 <body>
 
 <!-- Hero -->
 <section class="hero">
-  <div class="badge">🔐 Zero Cost · Secure · Open Source</div>
-  <h1>Share Files via<br/><span>QR Code</span> - Instantly</h1>
-  <p class="subtitle">
+  <div class="badge rise" style="--i:0">Zero Cost · Secure · Open Source</div>
+  <h1 class="rise" style="--i:1">Share Files via QR Code - Instantly</h1>
+  <p class="subtitle rise" style="--i:2">
     Share files instantly via QR code with optional password protection
     and auto-expiry. No sign-up required.
-    <span class="why-tooltip">
-    ℹ Why this?
-    <span class="tooltip-box">
-      Sharing a file from your desktop to your phone was always a
-      hassle - cables, WhatsApp to yourself, email. QR File Share
-      removes that friction entirely. Upload once, scan, done.
-    </span>
-  </span>
   </p>
+  <div class="why-wrap rise" style="--i:3">
+    <span class="why-tooltip" tabindex="0" aria-describedby="why-tip">
+      Why this?
+      <span class="tooltip-box" role="tooltip" id="why-tip">
+        Sharing a file from your desktop to your phone was always a
+        hassle - cables, WhatsApp to yourself, email. QR File Share
+        removes that friction entirely. Upload once, scan, done.
+      </span>
+    </span>
+  </div>
 
-  <div class="cta-group">
+  <div class="cta-group rise" style="--i:4">
     <a href="/qr-file-share-extension.zip" class="btn-primary" download>
-      ⬇ Download Extension
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 10l5 5 5-5M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+      Download Extension
     </a>
-    <a href="https://github.com/upadhyayanurag/qr-file-share" target="_blank" class="btn-secondary">
-      ★ View on GitHub
+    <a href="https://github.com/upadhyayanurag/qr-file-share" target="_blank" rel="noopener" class="btn-secondary">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+      View on GitHub
     </a>
   </div>
+
+  <figure class="scan rise" style="--i:5">
+    <div class="scan-tile">
+      <svg class="qr" viewBox="0 0 33 33" role="img" aria-label="QR code that opens the QR File Share site" shape-rendering="crispEdges"><path fill="currentColor" d="M2 2h7v1h-7zM10 2h1v1h-1zM12 2h1v1h-1zM18 2h5v1h-5zM24 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM12 3h1v1h-1zM14 3h3v1h-3zM20 3h1v1h-1zM24 3h1v1h-1zM30 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM12 4h2v1h-2zM15 4h3v1h-3zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM10 5h3v1h-3zM14 5h3v1h-3zM19 5h1v1h-1zM21 5h1v1h-1zM24 5h1v1h-1zM26 5h3v1h-3zM30 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM11 6h2v1h-2zM15 6h3v1h-3zM19 6h1v1h-1zM21 6h2v1h-2zM24 6h1v1h-1zM26 6h3v1h-3zM30 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h2v1h-2zM14 7h1v1h-1zM16 7h1v1h-1zM18 7h1v1h-1zM21 7h2v1h-2zM24 7h1v1h-1zM30 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h7v1h-7zM10 9h4v1h-4zM17 9h1v1h-1zM19 9h2v1h-2zM2 10h1v1h-1zM4 10h2v1h-2zM7 10h3v1h-3zM13 10h2v1h-2zM16 10h1v1h-1zM19 10h3v1h-3zM24 10h1v1h-1zM27 10h1v1h-1zM29 10h2v1h-2zM2 11h1v1h-1zM4 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM13 11h1v1h-1zM15 11h1v1h-1zM18 11h9v1h-9zM30 11h1v1h-1zM7 12h6v1h-6zM14 12h1v1h-1zM18 12h1v1h-1zM22 12h1v1h-1zM24 12h3v1h-3zM28 12h2v1h-2zM2 13h4v1h-4zM7 13h1v1h-1zM9 13h2v1h-2zM12 13h2v1h-2zM15 13h2v1h-2zM20 13h1v1h-1zM23 13h3v1h-3zM30 13h1v1h-1zM2 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM12 14h2v1h-2zM17 14h1v1h-1zM19 14h1v1h-1zM22 14h1v1h-1zM27 14h2v1h-2zM2 15h1v1h-1zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h1v1h-1zM12 15h3v1h-3zM16 15h3v1h-3zM21 15h1v1h-1zM24 15h1v1h-1zM28 15h3v1h-3zM5 16h4v1h-4zM10 16h2v1h-2zM13 16h1v1h-1zM15 16h1v1h-1zM18 16h1v1h-1zM21 16h3v1h-3zM25 16h1v1h-1zM28 16h3v1h-3zM7 17h1v1h-1zM9 17h1v1h-1zM17 17h2v1h-2zM20 17h1v1h-1zM23 17h1v1h-1zM25 17h1v1h-1zM29 17h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h7v1h-7zM16 18h1v1h-1zM22 18h2v1h-2zM25 18h3v1h-3zM29 18h1v1h-1zM3 19h4v1h-4zM10 19h4v1h-4zM17 19h1v1h-1zM19 19h1v1h-1zM22 19h1v1h-1zM27 19h3v1h-3zM2 20h1v1h-1zM6 20h1v1h-1zM8 20h3v1h-3zM12 20h1v1h-1zM15 20h3v1h-3zM19 20h1v1h-1zM28 20h1v1h-1zM4 21h1v1h-1zM7 21h1v1h-1zM9 21h1v1h-1zM11 21h3v1h-3zM15 21h5v1h-5zM22 21h2v1h-2zM25 21h1v1h-1zM28 21h1v1h-1zM3 22h1v1h-1zM8 22h1v1h-1zM13 22h1v1h-1zM15 22h6v1h-6zM22 22h7v1h-7zM10 23h5v1h-5zM18 23h3v1h-3zM22 23h1v1h-1zM26 23h5v1h-5zM2 24h7v1h-7zM10 24h2v1h-2zM13 24h1v1h-1zM16 24h1v1h-1zM18 24h1v1h-1zM20 24h3v1h-3zM24 24h1v1h-1zM26 24h2v1h-2zM29 24h1v1h-1zM2 25h1v1h-1zM8 25h1v1h-1zM10 25h1v1h-1zM12 25h1v1h-1zM14 25h3v1h-3zM20 25h1v1h-1zM22 25h1v1h-1zM26 25h2v1h-2zM29 25h1v1h-1zM2 26h1v1h-1zM4 26h3v1h-3zM8 26h1v1h-1zM11 26h3v1h-3zM17 26h1v1h-1zM19 26h1v1h-1zM22 26h5v1h-5zM28 26h1v1h-1zM2 27h1v1h-1zM4 27h3v1h-3zM8 27h1v1h-1zM10 27h1v1h-1zM13 27h1v1h-1zM17 27h2v1h-2zM21 27h1v1h-1zM26 27h2v1h-2zM30 27h1v1h-1zM2 28h1v1h-1zM4 28h3v1h-3zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h2v1h-2zM15 28h1v1h-1zM18 28h4v1h-4zM25 28h1v1h-1zM28 28h1v1h-1zM30 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM12 29h1v1h-1zM16 29h1v1h-1zM20 29h3v1h-3zM24 29h4v1h-4zM29 29h1v1h-1zM2 30h7v1h-7zM10 30h2v1h-2zM14 30h3v1h-3zM18 30h1v1h-1zM20 30h4v1h-4zM25 30h1v1h-1zM27 30h1v1h-1zM29 30h1v1h-1z"/></svg>
+      <div class="beam" aria-hidden="true"></div>
+    </div>
+    <figcaption>Scan it. This one opens the live site.</figcaption>
+  </figure>
 </section>
 
 <!-- Features -->
-<div class="features">
-  <div class="feature-card">
-    <div class="feature-icon">📁</div>
-    <h3>Any File, Up to 50MB</h3>
-    <p>PDFs, images, documents - share anything in seconds directly from Chrome.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon">🔒</div>
-    <h3>Password Protection</h3>
-    <p>Optionally protect your file with a password. BCrypt-hashed, never stored in plain text.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon">⏱</div>
-    <h3>Auto-Expiry</h3>
-    <p>Files automatically delete after 1 hour, 6 hours, 24 hours, or 7 days - your choice.</p>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon">🛡</div>
-    <h3>Private Storage</h3>
-    <p>Files are stored in a private bucket. No public URL ever exists for your data.</p>
+<div class="features-band">
+  <div class="features">
+    <div class="feature-card reveal" style="--i:0">
+      <div class="feature-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      <h3>Any File, Up to 50MB</h3>
+      <p>PDFs, images, documents - share anything in seconds directly from Chrome.</p>
+    </div>
+    <div class="feature-card reveal" style="--i:1">
+      <div class="feature-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4M12 15.500v2"/></svg></div>
+      <h3>Password Protection</h3>
+      <p>Optionally protect your file with a password. BCrypt-hashed, never stored in plain text.</p>
+    </div>
+    <div class="feature-card reveal" style="--i:2">
+      <div class="feature-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg></div>
+      <h3>Auto-Expiry</h3>
+      <p>Files automatically delete after 1 hour, 6 hours, 24 hours, or 7 days - your choice.</p>
+    </div>
+    <div class="feature-card reveal" style="--i:3">
+      <div class="feature-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.500 7.500-7.660 8.950a1 1 0 0 1-.67-.01C7.500 20.500 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.500-1.200 6.240-2.720a1.170 1.170 0 0 1 1.520 0C14.510 3.810 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h3>Private Storage</h3>
+      <p>Files are stored in a private bucket. No public URL ever exists for your data.</p>
+    </div>
   </div>
 </div>
 
 <!-- Install Steps -->
-<section class="install-section">
-  <h2 class="section-title">Install in 3 Steps</h2>
-  <p class="section-sub">No Chrome Web Store needed - load directly in Developer Mode</p>
+<div class="install-band">
+  <section class="install-section">
+    <h2 class="section-title reveal">Install in 3 Steps</h2>
+    <p class="section-sub reveal" style="--i:1">No Chrome Web Store needed - load directly in Developer Mode</p>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <h4>Download & Extract</h4>
-        <p>
-          Click <strong>"Download Extension"</strong> above and extract the ZIP to a folder
-          of your choice (e.g. <code>C:\qr-file-share-extension\</code>).
-        </p>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Download &amp; Extract</h4>
+          <p>
+            Click "Download Extension" above and extract the ZIP to a folder
+            of your choice (e.g. <code>C:\qr-file-share-extension\</code>).
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Open Chrome Extensions</h4>
+          <p>
+            In Chrome, go to <code>chrome://extensions</code> and toggle
+            Developer mode on (top-right switch).
+            Then click "Load unpacked".
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Select the Folder &amp; Pin</h4>
+          <p>
+            Navigate to and select the extracted folder. The
+            QR File Share extension appears in your extensions list.
+            Click the Extension icon in Chrome → pin it to your toolbar. Done!
+          </p>
+        </div>
       </div>
     </div>
-
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <h4>Open Chrome Extensions</h4>
-        <p>
-          In Chrome, go to <code>chrome://extensions</code> and toggle
-          <strong>Developer mode</strong> on (top-right switch).
-          Then click <strong>"Load unpacked"</strong>.
-        </p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <h4>Select the Folder & Pin</h4>
-        <p>
-          Navigate to and select the extracted folder. The
-          <strong>QR File Share</strong> extension appears in your extensions list.
-          Click the Extension icon in Chrome → pin it to your toolbar. Done!
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <!-- Download Banner -->
-<div class="download-banner">
-  <div class="banner-box">
+<div class="banner-band">
+  <div class="banner-box reveal">
     <h3>Ready to try it?</h3>
     <p>Free forever · No account · Works on Chrome 114+</p>
-    <a href="/qr-file-share-extension.zip" class="btn-primary" download>
-      ⬇ Download Extension (.zip)
+    <a href="/qr-file-share-extension.zip" class="btn-dark" download>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 10l5 5 5-5M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+      Download Extension (.zip)
     </a>
   </div>
 </div>
 
 <!-- Footer -->
 <footer>
-  Built with Spring Boot · Supabase · Chrome Extensions API &nbsp;|&nbsp;
-  <a href="https://github.com/upadhyayanurag/" target="_blank">GitHub</a>
-  &nbsp;·&nbsp;
-  <a href="https://linkedin.com/in/upadhyayanurag49" target="_blank">LinkedIn</a>
+  <span>Built with Spring Boot · Supabase · Chrome Extensions API</span>
+  <span class="links">
+    <a href="https://github.com/upadhyayanurag/" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://linkedin.com/in/upadhyayanurag49" target="_blank" rel="noopener">LinkedIn</a>
+  </span>
 </footer>
 
+<script>
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    els.forEach(function (e) { io.observe(e); });
+  })();
+</script>
 </body>
 </html>

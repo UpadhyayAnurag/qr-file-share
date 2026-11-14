@@ -1,5 +1,6 @@
 package com.qrfileshare.service;
 
+import com.qrfileshare.model.TokenEntry;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -8,8 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class DownloadTokenStore {
-
-    record TokenEntry(String fileId, long expiresAt) {}
 
     private final ConcurrentHashMap<String, TokenEntry> store = new ConcurrentHashMap<>();
 
